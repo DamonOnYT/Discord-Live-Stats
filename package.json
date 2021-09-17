@@ -9,7 +9,9 @@
     "discord.js": "^12.5.3",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "passport": "^0.4.1",
+    "passport-discord": "^0.1.4"
   },
   "devDependencies": {},
   "repository": {
@@ -17,7 +19,7 @@
     "url": "git+https://github.com/meister03/discord-live-stats.git"
   },
   "publishConfig": {
-  "access": "public"
+    "access": "public"
   },
   "keywords": [
     "discord",

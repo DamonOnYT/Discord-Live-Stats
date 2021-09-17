@@ -69,7 +69,7 @@ class Client{
     _handleMessage(message){
         if(!message.kill) return;
         if(message.shard === undefined) return;
-        if(this.client.ws.shards.has(message.shard)) return this.client.ws.shards.get(message.shard).destroy();
+        if(this.client.ws.shards.has(message.shard)) return process.exit(0)
         return false;
     }
 

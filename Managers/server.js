@@ -10,6 +10,23 @@ const Schema = require("../Structures/schema.js");
 const Code = require('./code.js')
 const FormData = new form();
 
+var DiscordStrategy = require('passport-discord').Strategy;
+const passport = require('passport');
+var scopes = ['identify', 'email'];
+
+passport.use(new DiscordStrategy({
+    clientID: this.config.bot.client_id,
+    clientSecret: this.config.bot.client_id,
+    callbackURL: this.config.client_secret,
+    scope: scopes
+},
+function(accessToken, refreshToken, profile, cb) {
+        return done(null, profile);
+}));
+
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
+
 class Server extends Events{
     constructor(app, config){
         super()
@@ -31,24 +48,19 @@ class Server extends Events{
         this.app.set('views',  path.join(__dirname,`../Frontend`));
     }
     _buildRoute(){
+        this.app.use(passport.initialize());
+        this.app.use(passport.session());
         this.app.get(`/${(this.config.login_path ||'')}`,(req, res) => {
             res.redirect(`https://discord.com/api/oauth2/authorize?client_id=${this.config.bot.client_id}&redirect_uri=${this.config.redirect_uri}&response_type=code&scope=${this.config.scope.join('+')}`)
         })
-        this.app.get('/login', async (req, res) => {
+        this.app.get('/auth/discord/callback', passport.authenticate('discord', {
+            failureRedirect: '/'
+        }), function(req, res) {
+            res.redirect('/secretstuff') // Successful auth
+        });
+
+        this.app.get('/home', passport.authenticate('discord'), async (req, res) => {
             try{
-                const code = req.query.code;
-                if(this.code.checkSession(code)){
-                    return res.render("starter", {posts: FormData.humanize(FormData.shardData(0, {all: true})),secret: {code: code},config: this.config, data: FormData.humanize(FormData.totalData())});
-                }
-                if(!code) return res.redirect('/');
-                const passport = new Passport({
-                    code: code,
-                    client_id: this.config.bot.client_id,
-                    client_secret: this.config.bot.client_secret,
-                    redirect_uri: this.config.redirect_uri,
-                    scope: this.config.scope
-                })
-                await passport.open(); // Trades your code for an access token and gets the basic scopes for you.
                 if(this.config.owners.includes(passport.user.id)){
                     this.code.addSession(code)
                     res.render("starter", {posts: FormData.humanize(FormData.shardData(0, {all: true})),secret: {code: code},config: this.config, data: FormData.humanize(FormData.totalData())});
@@ -61,7 +73,7 @@ class Server extends Events{
         })
           
           
-        this.app.get("/status", (req, res) =>{
+        this.app.get("/status", passport.authenticate('discord'), (req, res) =>{
             try{
                 const shardData = FormData.shardData(0, {all: true})
                 const totalData = FormData.totalData()
@@ -73,7 +85,7 @@ class Server extends Events{
         })
           
           
-        this.app.get("/shard", (req, res) => {
+        this.app.get("/shard", passport.authenticate('discord'), (req, res) => {
             try{
                 const shardid = req.query.shardid;
                 let data = FormData.shardData(Number(shardid));
@@ -85,11 +97,9 @@ class Server extends Events{
             }
         })
 
-        this.app.get("/killShard", (req, res) => {
+        this.app.get("/killShard", passport.authenticate('discord'), (req, res) => {
             try{
                 const shardid = req.query.shardid;
-                const code = req.query.code;
-                if(!this.code.checkSession(code)) return res.end(`AUTHENTICATION FAILED | RELOAD & LOGIN AGAIN`);
                 this.killShard.set(Number(shardid), true)
                 return res.end();
             }catch(error){
