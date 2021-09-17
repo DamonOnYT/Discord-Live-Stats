@@ -196,7 +196,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div id="shard-status-card" class="card-body">
                   <% 
                     const code = secret.code;
-                    let i=0; posts.forEach((post)=> {
+                    let i=0; 
+                    posts.forEach((post)=> {
                     const classname2 = (post.color === 'green' ? 'normal' : 'redalert');
                     %>
                     <div id="shard-button<%=i%>" class="shard-button">

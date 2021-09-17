@@ -60,14 +60,14 @@ function refreshStats(i, code) {
         const classnamecolor = (newdata[i].color === 'green' ? '#43b581' : '#ED4245');
         if (!$(`#shard-button${i}`).length) {
           $("#shard-status-card").append(`<div id="shard-button${i}" class="shard-button">
-                    <p id= "shard-button-name${i}" class="shard-button ${color}"><b>Shard ${newdata[i].id}</b>
+                    <p id= "shard-button-name${newdata[i].id}" class="shard-button ${color}"><b>Shard ${newdata[i].id}</b>
                     </p>
                     <div class="shard-button ressource"><i class="fa fa-cog"></i><span>
-                        <button id="shard-button-ressource-stats${i}" title="Statistics" class="shard-button managestats" onClick="shardStats(${i}, ${code})"><i class="fa fa-hdd"></i></button>
-                        <button id="shard-button-ressource-refresh${i}" title="Refresh Stats"class="shard-button managegreen" onClick="refreshStats(${i}, ${code})"><i class="fa fa-retweet"></i></button>
-                        <button id="shard-button-ressource-kill${i}" title="Kill Shard" class="shard-button managered" onClick="killShard(${i}, ${code})"><i class="fa fa-stop"></i></button>
+                        <button id="shard-button-ressource-stats${newdata[i].id}" title="Statistics" class="shard-button managestats" onClick="shardStats(${newdata[i].id}, ${code})"><i class="fa fa-hdd"></i></button>
+                        <button id="shard-button-ressource-refresh${newdata[i].id}" title="Refresh Stats"class="shard-button managegreen" onClick="refreshStats(${newdata[i].id}, ${code})"><i class="fa fa-retweet"></i></button>
+                        <button id="shard-button-ressource-kill${newdata[i].id}" title="Kill Shard" class="shard-button managered" onClick="killShard(${newdata[i].id}, ${code})"><i class="fa fa-stop"></i></button>
                         </span></div>
-                    <p id="shard-button-log${i}" class="shard-button log ${classname}">${newdata[i].message}</p>
+                    <p id="shard-button-log${newdata[i].id}" class="shard-button log ${classname}">${newdata[i].message}</p>
                   </div>`)
         } else {
 
